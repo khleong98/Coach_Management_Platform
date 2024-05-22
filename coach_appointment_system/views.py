@@ -46,16 +46,16 @@ def coach_appointment_booking(request):
         to_appointment_time = from_appointment_time + timedelta(minutes = 30)
         appointment_day_id = from_appointment_time.weekday() + 1
         
-        schedule = [{'from_time': i.from_time, 'to_time': i.to_time} for i in Coach_Schedule.objects.filter(coach_id = coach_id, day_id = appointment_day_id).all()]
+        coach_schedule = [{'from_time': i.from_time, 'to_time': i.to_time} for i in Coach_Schedule.objects.filter(coach_id = coach_id, day_id = appointment_day_id).all()]
 
-        for i in schedule:
+        for schedule in coach_schedule:
 
-            if i['from_time'] <= from_appointment_time.time() and i['to_time'] >= to_appointment_time.time():
+            if schedule['from_time'] <= from_appointment_time.time() and schedule['to_time'] >= to_appointment_time.time():
 
                 present_appointment = [{'from_time': i.from_time + timedelta(hours = 8), 'to_time': i.to_time + timedelta(hours = 8)} for i in Coach_Appointment.objects.filter(coach_id = coach_id, from_time__date = from_appointment_time.date()).all()]
 
-                for j in present_appointment:
-                    if j['from_time'].time() <= from_appointment_time.time() < j['to_time'].time() or j['from_time'].time() < to_appointment_time.time() <= j['to_time'].time():
+                for appointment in present_appointment:
+                    if appointment['from_time'].time() <= from_appointment_time.time() < appointment['to_time'].time() or appointment['from_time'].time() < to_appointment_time.time() <= appointment['to_time'].time():
                         messages.error(request, f'Your appointment with {coach} clashes with other existing.')
                         return redirect('coach_appointment_booking')
                 
